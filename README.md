@@ -4,6 +4,12 @@ Decode a VIN against the free NHTSA **vPIC** API and watch ~150 noisy, loosely-t
 
 This mirrors how a telematics API company builds data enrichments: ingest a messy external source and reshape it into a single, consistent, typed contract its consumers can rely on. **The normalization layer is the point** — everything else is plumbing.
 
+![The VIN Decoder app: paste a VIN, get a clean typed model](public/demo.png)
+
+## How it works
+
+A VIN goes in. We call the vPIC API, get back the raw mess, and run it through a normalizer that keeps the fields worth keeping, renames them, strips the junk, and coerces types. What comes out is a clean common model — the same shape every time, no matter what the raw data looks like.
+
 ![A VIN decoded from a raw vPIC response into a clean, typed common model](public/vindecoder.png)
 
 ## The common model (the contract)
@@ -98,6 +104,9 @@ app/
   api/decode/batch/route.ts  POST batch decode
   components/                 UI (decoder, vehicle card, raw-vs-clean, batch table)
   page.tsx                   demo page
+public/
+  vindecoder.png             the how-it-works pipeline diagram
+  demo.png                   screenshot of the running app
 ```
 
 ## Stack
