@@ -3,22 +3,13 @@
 import { useMemo, useState } from "react";
 
 import { type DecodeResult, type DecodeSuccess, isDecodeSuccess } from "@/lib/decode";
+import { MAX_BATCH_SIZE, parseVinInput } from "@/lib/vinInput";
 import { BatchTable } from "./BatchTable";
 import { EXAMPLE_VINS } from "./fields";
 import { RawCleanDiff } from "./RawCleanDiff";
 import { Spinner } from "./icons";
 import { StatBar } from "./StatBar";
 import { VehicleCard } from "./VehicleCard";
-
-/** Split free-form input into VINs on commas, semicolons, or any whitespace. */
-function parseVins(input: string): string[] {
-  const seen = new Set<string>();
-  return input
-    .split(/[\s,;]+/)
-    .map((v) => v.trim().toUpperCase())
-    .filter((v) => v.length > 0)
-    .filter((v) => (seen.has(v) ? false : (seen.add(v), true)));
-}
 
 export function VinDecoder() {
   const [input, setInput] = useState("");
@@ -27,11 +18,16 @@ export function VinDecoder() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const parsed = useMemo(() => parseVins(input), [input]);
+  const parsed = useMemo(() => parseVinInput(input), [input]);
+  const exceedsBatchLimit = parsed.length > MAX_BATCH_SIZE;
 
   async function runDecode(vins: string[]) {
     if (vins.length === 0) {
       setError("Enter at least one VIN to decode.");
+      return;
+    }
+    if (vins.length > MAX_BATCH_SIZE) {
+      setError(`Enter no more than ${MAX_BATCH_SIZE} unique VINs at a time.`);
       return;
     }
 
@@ -88,7 +84,11 @@ export function VinDecoder() {
   const isBatch = (results?.length ?? 0) > 1;
 
   return (
-    <div className="flex flex-col gap-6">
+    <section
+      id="decoder"
+      aria-label="VIN decoder"
+      className="scroll-mt-24 flex flex-col gap-6"
+    >
       {/* Input panel */}
       <form
         onSubmit={(e) => {
@@ -119,6 +119,8 @@ export function VinDecoder() {
             }
           }}
           rows={2}
+          aria-describedby={exceedsBatchLimit ? "vin-help vin-limit-error" : "vin-help"}
+          aria-invalid={exceedsBatchLimit}
           spellCheck={false}
           autoComplete="off"
           placeholder="Enter a VIN — or paste several, comma / space / newline separated"
@@ -144,7 +146,7 @@ export function VinDecoder() {
 
           <button
             type="submit"
-            disabled={loading || parsed.length === 0}
+            disabled={loading || parsed.length === 0 || exceedsBatchLimit}
             className="inline-flex items-center gap-2 rounded-md bg-zinc-900 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-zinc-700 disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-zinc-400"
           >
             {loading && <Spinner className="size-4 animate-spin" />}
@@ -152,9 +154,14 @@ export function VinDecoder() {
           </button>
         </div>
 
-        <p className="mt-2 font-mono text-[11px] text-zinc-500">
-          17 chars · A–Z (no I/O/Q) and 0–9 · ⌘/Ctrl + Enter to decode
+        <p id="vin-help" className="mt-2 font-mono text-[11px] text-zinc-500">
+          17 chars · A–Z (no I/O/Q) and 0–9 · up to {MAX_BATCH_SIZE} unique VINs · ⌘/Ctrl + Enter
         </p>
+        {exceedsBatchLimit && (
+          <p id="vin-limit-error" className="mt-2 text-xs font-medium text-red-700">
+            This batch has {parsed.length} unique VINs; the limit is {MAX_BATCH_SIZE}.
+          </p>
+        )}
       </form>
 
       {/* Error banner */}
@@ -198,6 +205,6 @@ export function VinDecoder() {
           {isBatch && !detail && <p className="text-sm text-zinc-500">No vehicle selected.</p>}
         </div>
       )}
-    </div>
+    </section>
   );
 }

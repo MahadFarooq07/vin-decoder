@@ -4,7 +4,7 @@
  */
 
 import type { RawVpicResult } from "./vpic";
-import { type Vehicle, normalize, countCleanFields } from "./normalize";
+import { type Vehicle, normalize, countCleanFields } from "./normalize.ts";
 
 /** A successfully decoded VIN: the clean model, the raw row, and the field counts. */
 export interface DecodeSuccess {

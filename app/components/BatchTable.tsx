@@ -23,7 +23,7 @@ export function BatchTable({
       <header className="flex items-center justify-between gap-3 border-b border-zinc-200 px-5 py-3.5 sm:px-6">
         <h2 className="text-sm font-medium text-zinc-900">Batch results</h2>
         <span className="font-mono text-xs text-zinc-500">
-          {okCount}/{results.length} decoded · select a row for detail
+          {okCount}/{results.length} decoded · select a VIN for detail
         </span>
       </header>
 
@@ -60,12 +60,20 @@ export function BatchTable({
               return (
                 <tr
                   key={result.vin}
-                  onClick={() => onSelect(result.vin)}
-                  className={`cursor-pointer border-t border-zinc-100 transition-colors ${
+                  className={`border-t border-zinc-100 transition-colors ${
                     selected ? "bg-emerald-50" : "hover:bg-zinc-50"
                   }`}
                 >
-                  <Td className="font-mono text-zinc-900">{v.vin}</Td>
+                  <Td className="font-mono text-zinc-900">
+                    <button
+                      type="button"
+                      onClick={() => onSelect(result.vin)}
+                      aria-pressed={selected}
+                      className="rounded-sm text-left underline decoration-zinc-300 underline-offset-4 transition-colors hover:decoration-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900"
+                    >
+                      {v.vin}
+                    </button>
+                  </Td>
                   <Td className="text-zinc-900">{displayValue(v.make)}</Td>
                   <Td className="text-zinc-600">{displayValue(v.model)}</Td>
                   <Td className="font-mono text-zinc-600">{displayValue(v.year)}</Td>

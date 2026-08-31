@@ -43,33 +43,66 @@ const RULES = [
 
 export default function Home() {
   return (
-    <div className="flex min-h-full flex-col">
+    <div id="top" className="flex min-h-full flex-col">
+      <a
+        href="#main-content"
+        className="sr-only fixed top-3 left-3 z-50 rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white focus:not-sr-only"
+      >
+        Skip to content
+      </a>
       {/* Header */}
       <header className="sticky top-0 z-10 border-b border-zinc-200 bg-white/85 backdrop-blur">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-3.5 sm:px-8">
-          <div className="flex items-center gap-2.5">
+          <a href="#top" className="flex items-center gap-2.5" aria-label="VIN Decoder home">
             <span className="flex size-7 items-center justify-center rounded-md border border-zinc-300 bg-zinc-50 text-zinc-900">
               <Mark className="size-4" />
             </span>
             <span className="text-sm font-semibold tracking-tight text-zinc-900">
               VIN Decoder
             </span>
-          </div>
-          <a
-            href="https://vpic.nhtsa.dot.gov/api/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 text-xs text-zinc-500 transition-colors hover:text-zinc-900"
-          >
-            <span className="hidden sm:inline link-underline">Powered by NHTSA vPIC</span>
-            <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 font-mono text-[10px] text-emerald-700">
-              free · keyless
-            </span>
           </a>
+
+          <div className="flex items-center gap-5">
+            <nav aria-label="Primary" className="hidden items-center gap-4 md:flex">
+              <a
+                href="#decoder"
+                className="text-xs text-zinc-500 transition-colors hover:text-zinc-900"
+              >
+                Decoder
+              </a>
+              <a
+                href="#normalization"
+                className="text-xs text-zinc-500 transition-colors hover:text-zinc-900"
+              >
+                How it works
+              </a>
+              <a
+                href="#contract"
+                className="text-xs text-zinc-500 transition-colors hover:text-zinc-900"
+              >
+                Contract
+              </a>
+            </nav>
+            <a
+              href="https://vpic.nhtsa.dot.gov/api/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-xs text-zinc-500 transition-colors hover:text-zinc-900"
+            >
+              <span className="hidden sm:inline link-underline">NHTSA vPIC</span>
+              <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 font-mono text-[10px] text-emerald-700">
+                free · keyless
+              </span>
+            </a>
+          </div>
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-5xl flex-1 px-5 pb-24 sm:px-8">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="mx-auto w-full max-w-5xl flex-1 px-5 pb-24 outline-none sm:px-8"
+      >
         {/* Hero */}
         <section className="animate-fade-up py-12 sm:py-16">
           <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1 font-mono text-[11px] text-zinc-600">
@@ -92,7 +125,7 @@ export default function Home() {
         <VinDecoder />
 
         {/* Normalization rules */}
-        <section className="mt-20">
+        <section id="normalization" className="scroll-mt-24 mt-20">
           <h2 className="text-xl font-semibold tracking-tight text-zinc-900">
             What the normalization layer does
           </h2>
@@ -120,7 +153,7 @@ export default function Home() {
         </section>
 
         {/* The contract */}
-        <section className="mt-16">
+        <section id="contract" className="scroll-mt-24 mt-16">
           <h2 className="text-xl font-semibold tracking-tight text-zinc-900">The common model</h2>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-zinc-600">
             Every consumer codes against this typed contract — never against raw vPIC.

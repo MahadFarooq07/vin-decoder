@@ -73,3 +73,25 @@ test("countCleanFields counts only populated fields", () => {
   // Everything populated except fuelTypeSecondary, driveType, doors.
   assert.equal(countCleanFields(v), 15);
 });
+
+test("non-numeric values never leak NaN into the common model", () => {
+  const v = normalize(
+    { ModelYear: "unknown", EngineCylinders: "six", DisplacementL: "n/a" },
+    "1HGCM82633A004352",
+  );
+
+  assert.equal(v.year, null);
+  assert.equal(v.engineCylinders, null);
+  assert.equal(v.displacementL, null);
+});
+
+test("GVWR without a class prefix keeps the range without inventing a class", () => {
+  const v = normalize({ GVWR: "10,001–14,000 lb" }, "1HGCM82633A004352");
+  assert.equal(v.gvwrClass, null);
+  assert.equal(v.gvwrRange, "10,001–14,000 lb");
+});
+
+test("ManufacturerName is supported as a defensive fallback", () => {
+  const v = normalize({ ManufacturerName: "Example Motors" }, "1HGCM82633A004352");
+  assert.equal(v.manufacturer, "Example Motors");
+});

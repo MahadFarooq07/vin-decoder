@@ -35,7 +35,9 @@ function QualityBadge({ vehicle }: { vehicle: Vehicle }) {
 export function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
   const [showEmpty, setShowEmpty] = useState(false);
 
-  const emptyCount = Object.values(vehicle).filter((v) => v === null).length;
+  const fieldValues = Object.values(vehicle);
+  const emptyCount = fieldValues.filter((value) => value === null).length;
+  const populatedCount = fieldValues.length - emptyCount;
 
   return (
     <section className="animate-fade-up overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-sm">
@@ -53,8 +55,8 @@ export function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
       {/* Toggle row */}
       <div className="flex items-center justify-between gap-3 border-b border-zinc-100 bg-zinc-50/60 px-5 py-2.5 sm:px-6">
         <span className="text-xs text-zinc-500">
-          Common model · <span className="text-zinc-800">{18 - emptyCount}</span> of 18 fields
-          populated
+          Common model · <span className="text-zinc-800">{populatedCount}</span> of{" "}
+          {fieldValues.length} fields populated
         </span>
         {emptyCount > 0 && (
           <button

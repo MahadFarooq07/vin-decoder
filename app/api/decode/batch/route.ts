@@ -3,9 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { buildDecodeSuccess, type DecodeResult } from "@/lib/decode";
 import { fetchVinBatch, VpicError } from "@/lib/vpic";
 import { validateVin } from "@/lib/validateVin";
-
-/** Keep batches sane — vPIC has no published limit, but we shouldn't proxy abuse. */
-const MAX_BATCH = 25;
+import { MAX_BATCH_SIZE } from "@/lib/vinInput";
 
 /**
  * POST /api/decode/batch  body: { vins: string[] }
@@ -33,9 +31,9 @@ export async function POST(request: NextRequest) {
       { status: 400 },
     );
   }
-  if (vins.length > MAX_BATCH) {
+  if (vins.length > MAX_BATCH_SIZE) {
     return NextResponse.json(
-      { error: `Too many VINs — ${vins.length} provided, limit is ${MAX_BATCH}.` },
+      { error: `Too many VINs — ${vins.length} provided, limit is ${MAX_BATCH_SIZE}.` },
       { status: 400 },
     );
   }
