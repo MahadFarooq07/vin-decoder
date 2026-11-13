@@ -32,6 +32,37 @@ function QualityBadge({ vehicle }: { vehicle: Vehicle }) {
   );
 }
 
+function CopyCleanJson({ vehicle }: { vehicle: Vehicle }) {
+  const [status, setStatus] = useState<"idle" | "copying" | "copied" | "error">("idle");
+
+  async function copyJson() {
+    setStatus("copying");
+    try {
+      await navigator.clipboard.writeText(JSON.stringify(vehicle, null, 2));
+      setStatus("copied");
+    } catch {
+      setStatus("error");
+    }
+  }
+
+  return (
+    <div className="flex flex-wrap items-center gap-x-2">
+      <button
+        type="button"
+        onClick={copyJson}
+        disabled={status === "copying"}
+        className="rounded-md border border-zinc-200 bg-white px-2 py-1 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-100 disabled:opacity-50"
+      >
+        Copy clean JSON
+      </button>
+      <span role="status" className="text-xs text-zinc-600">
+        {status === "copied" && "Copied!"}
+        {status === "error" && "Couldn’t copy. Try again or use Raw vs. clean."}
+      </span>
+    </div>
+  );
+}
+
 export function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
   const [showEmpty, setShowEmpty] = useState(false);
 
@@ -52,12 +83,13 @@ export function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
         <QualityBadge vehicle={vehicle} />
       </header>
 
-      {/* Toggle row */}
-      <div className="flex items-center justify-between gap-3 border-b border-zinc-100 bg-zinc-50/60 px-5 py-2.5 sm:px-6">
+      {/* Common model controls */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-100 bg-zinc-50/60 px-5 py-2.5 sm:px-6">
         <span className="text-xs text-zinc-500">
           Common model · <span className="text-zinc-800">{populatedCount}</span> of{" "}
           {fieldValues.length} fields populated
         </span>
+        <CopyCleanJson key={vehicle.vin} vehicle={vehicle} />
         {emptyCount > 0 && (
           <button
             type="button"
